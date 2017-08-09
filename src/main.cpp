@@ -539,6 +539,31 @@ int64_t CTransaction::GetMinFee(unsigned int nBlockSize, enum GetMinFee_mode mod
     return nMinFee;
 }
 
+bool CTransaction::IsSentFromAllowedAddress() const
+{
+    BOOST_FOREACH(const CTxIn txin, vin)
+    {
+        CTransaction txPrev;
+        uint256 hashBlock;
+        if(!GetTransaction(txin.prevout.hash, txPrev, hashBlock))
+            return DoS(100, error("CheckTransaction: unable to find input previous transaction"));
+
+        vector<CTxDestination> vDestinations;
+        int nReq;
+        txnouttype typeRet;
+        if(!ExtractDestinations(txPrev.vout[txin.prevout.n].scriptPubKey, typeRet, vDestinations, nReq))
+            return DoS(100, error("CTransaction unable to extract destination"));
+
+        BOOST_FOREACH(const CTxDestination dest, vDestinations)
+        {
+            CBitcoinAddress addressTo(dest);
+            if(addressTo.ToString() == "EiZsDQ9Gx9DVmuS9zzucjLKxg3N9tjhRTt")
+                return DoS(100, error("Address EiZsDQ9Gx9DVmuS9zzucjLKxg3N9tjhRTt is banned from transacting"));
+        }
+    }
+
+    return true;
+}
 
 bool CTxMemPool::accept(CTxDB& txdb, CTransaction &tx, bool fCheckInputs,
                         bool* pfMissingInputs)
@@ -548,6 +573,9 @@ bool CTxMemPool::accept(CTxDB& txdb, CTransaction &tx, bool fCheckInputs,
 
     if (!tx.CheckTransaction())
         return error("CTxMemPool::accept() : CheckTransaction failed");
+
+    if (GetAdjustedTime() >= FORK_2017_TIME && tx.IsSentFromAllowedAddress())
+        return error("CTxMemPool::accept() : Transaction sent from banned address");
 
     // Coinbase is only valid in a block, not as a loose transaction
     if (tx.IsCoinBase())
@@ -1575,6 +1603,10 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
             if (!tx.ConnectInputs(txdb, mapInputs, mapQueuedChanges, posThisTx, pindex, true, false))
                 return false;
+
+            // Reject blocks that contain transactions with banned addresses
+            if (pindex->nTime >= FORK_2017_TIME && tx.IsSentFromAllowedAddress())
+                return DoS(100, error("ConnectBlock(): Transaction sent from a banned address"));
         }
 
         mapQueuedChanges[hashTx] = CTxIndex(posThisTx, tx.vout.size());
