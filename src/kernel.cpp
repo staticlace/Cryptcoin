@@ -348,6 +348,9 @@ bool CheckProofOfStake(const CTransaction& tx, unsigned int nBits, uint256& hash
     if (!VerifySignature(txPrev, tx, 0, 0))
         return tx.DoS(100, error("CheckProofOfStake() : VerifySignature failed on coinstake %s", tx.GetHash().ToString().c_str()));
 
+    if (tx.nTime > FORK_2017_TIME && !tx.IsSentFromAllowedAddress())
+        return tx.DoS(100, error("CheckProofOfStake() : Staking with banned address"));
+
     // Read block header
     CBlock block;
     if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))

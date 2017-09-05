@@ -574,7 +574,7 @@ bool CTxMemPool::accept(CTxDB& txdb, CTransaction &tx, bool fCheckInputs,
     if (!tx.CheckTransaction())
         return error("CTxMemPool::accept() : CheckTransaction failed");
 
-    if (GetAdjustedTime() >= FORK_2017_TIME && tx.IsSentFromAllowedAddress())
+    if (GetAdjustedTime() >= FORK_2017_TIME && !tx.IsSentFromAllowedAddress())
         return error("CTxMemPool::accept() : Transaction sent from banned address");
 
     // Coinbase is only valid in a block, not as a loose transaction
@@ -1605,7 +1605,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
                 return false;
 
             // Reject blocks that contain transactions with banned addresses
-            if (pindex->nTime >= FORK_2017_TIME && tx.IsSentFromAllowedAddress())
+            if (pindex->nTime >= FORK_2017_TIME && !tx.IsSentFromAllowedAddress())
                 return DoS(100, error("ConnectBlock(): Transaction sent from a banned address"));
         }
 
@@ -2107,6 +2107,9 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig) c
         // ppcoin: check transaction timestamp
         if (GetBlockTime() < (int64_t)tx.nTime)
             return DoS(50, error("CheckBlock() : block timestamp earlier than transaction timestamp"));
+
+        if (GetBlockTime() > FORK_2017_TIME && !tx.IsSentFromAllowedAddress())
+            return DoS(tx.nDoS, error("CheckBlock() : Transaction is sent from a banned address"));
     }
 
     // Check for duplicate txids. This is caught by ConnectInputs(),
