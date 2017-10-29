@@ -28,7 +28,7 @@ class CRequestTracker;
 class CNode;
 
 static const int LAST_POW_BLOCK = 368000;
-static const unsigned int FORK_2017_TIME = 1505923200; //Human time (GMT): Wednesday, September 20, 2017 4:00:00 PM
+static const unsigned int FORK_2017_TIME = 1514836800; //Human time (GMT): Monday, January 1, 2018 8:00:00 PM
 
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
