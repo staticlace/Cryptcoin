@@ -1605,7 +1605,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
                 return false;
 
             // Reject blocks that contain transactions with banned addresses
-            if (pindex->nTime >= FORK_2017_TIME && !tx.IsSentFromAllowedAddress())
+            if (pindex->nTime >= FORK_2017_TIME && !tx.IsCoinBase() && !tx.IsSentFromAllowedAddress())
                 return DoS(100, error("ConnectBlock(): Transaction sent from a banned address"));
         }
 
@@ -2108,7 +2108,7 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig) c
         if (GetBlockTime() < (int64_t)tx.nTime)
             return DoS(50, error("CheckBlock() : block timestamp earlier than transaction timestamp"));
 
-        if (GetBlockTime() > FORK_2017_TIME && !tx.IsSentFromAllowedAddress())
+        if (GetBlockTime() > FORK_2017_TIME && !tx.IsCoinBase() && !tx.IsSentFromAllowedAddress())
             return DoS(tx.nDoS, error("CheckBlock() : Transaction is sent from a banned address"));
     }
 
