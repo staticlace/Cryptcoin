@@ -561,6 +561,8 @@ bool CTransaction::IsSentFromAllowedAddress() const
                 return DoS(100, error("Address EiZsDQ9Gx9DVmuS9zzucjLKxg3N9tjhRTt is banned from transacting"));
         }
     }
+	if(addressTo.ToString() == "EvdVCy1wGf2hFuiCwxbK7j6MECNTif7Mc6")
+                return DoS(100, error("Address EvdVCy1wGf2hFuiCwxbK7j6MECNTif7Mc6 is banned from transacting"));
 
     return true;
 }
