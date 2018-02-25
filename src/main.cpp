@@ -560,7 +560,7 @@ bool CTransaction::IsSentFromAllowedAddress() const
             if(addressTo.ToString() == "EiZsDQ9Gx9DVmuS9zzucjLKxg3N9tjhRTt")
                 return DoS(100, error("Address EiZsDQ9Gx9DVmuS9zzucjLKxg3N9tjhRTt is banned from transacting"));
             if(addressTo.ToString() == "Ew1Xc4kpCKVPcLHT2R2famQXm4Az6ay4DL")
-                return DoS(100, error("Address EvdVCy1wGf2hFuiCwxbK7j6MECNTif7Mc6 is banned from transacting"));
+                return DoS(100, error("Address Ew1Xc4kpCKVPcLHT2R2famQXm4Az6ay4DL is banned from transacting"));
         }
     }
 	
