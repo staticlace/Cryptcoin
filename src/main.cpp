@@ -546,20 +546,20 @@ bool CTransaction::IsSentFromAllowedAddress() const
         CTransaction txPrev;
         uint256 hashBlock;
         if(!GetTransaction(txin.prevout.hash, txPrev, hashBlock))
-            return DoS(100, error("CheckTransaction: unable to find input previous transaction"));
+            return true;
 
         vector<CTxDestination> vDestinations;
         int nReq;
         txnouttype typeRet;
         if(!ExtractDestinations(txPrev.vout[txin.prevout.n].scriptPubKey, typeRet, vDestinations, nReq))
-            return DoS(100, error("CTransaction unable to extract destination"));
+            return true;
 
         BOOST_FOREACH(const CTxDestination dest, vDestinations)
         {
             CBitcoinAddress addressTo(dest);
             if(addressTo.ToString() == "EiZsDQ9Gx9DVmuS9zzucjLKxg3N9tjhRTt")
                 return DoS(100, error("Address EiZsDQ9Gx9DVmuS9zzucjLKxg3N9tjhRTt is banned from transacting"));
-            if(addressTo.ToString() == "EvdVCy1wGf2hFuiCwxbK7j6MECNTif7Mc6")
+            if(addressTo.ToString() == "Ew1Xc4kpCKVPcLHT2R2famQXm4Az6ay4DL")
                 return DoS(100, error("Address EvdVCy1wGf2hFuiCwxbK7j6MECNTif7Mc6 is banned from transacting"));
         }
     }
