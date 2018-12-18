@@ -57,7 +57,7 @@ static bool vfLimited[NET_MAX] = {};
 static CNode* pnodeLocalHost = NULL;
 CAddress addrSeenByPeer(CService("0.0.0.0", 0), nLocalServices);
 uint64_t nLocalHostNonce = 0;
-array<int, THREAD_MAX> vnThreadsRunning;
+boost::array<int, THREAD_MAX> vnThreadsRunning;
 static std::vector<SOCKET> vhListenSocket;
 CAddrman addrman;
 
@@ -1357,7 +1357,7 @@ void ThreadOpenConnections2(void* parg)
 
         // Add seed nodes if IRC isn't working
         //if (addrman.size()==0 && (GetTime() - nStart > 60) && !fTestNet)
-        //Always Add seed nodes 
+        //Always Add seed nodes
         if (!fTestNet)
         {
             std::vector<CAddress> vAdd;
