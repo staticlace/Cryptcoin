@@ -51,6 +51,7 @@ public:
     bool getMinimizeOnClose() { return fMinimizeOnClose; }
     int getDisplayUnit() { return nDisplayUnit; }
     bool getDisplayAddresses() { return bDisplayAddresses; }
+    bool getCoinControlFeatures();
     QString getLanguage() { return language; }
 
 private:
